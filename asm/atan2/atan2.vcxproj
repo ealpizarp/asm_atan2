@@ -20,6 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <MASM Include="main.asm" />
+    <MASM Include="octant.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="octant.inc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

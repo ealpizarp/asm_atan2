@@ -1,7 +1,17 @@
+
+; ==========Costa Rica Institute of Technology===========
+;
+; Authors: Eric Alpizar
+;		   Rodrigo Espinach
+;		   Jimmy Salas
+;
+; Last date modified: 12/08/2020
+
 include C:\Irvine\Irvine32.inc
 includelib C:\Irvine\Irvine32.lib
 includelib C:\Irvine\Kernel32.lib
 includelib C:\Irvine\user32.lib
+include octant.inc
 
 ; Descripcion del Programa:
 ; Autor:
@@ -39,7 +49,7 @@ imag_five_right_bitshift  DWORD ?
 denominator DWORD ?
 alternate_denominator DWORD ?
 
-octant BYTE ?
+
 
 ;declarar variables aqui
 
@@ -68,99 +78,7 @@ mov imag_part, eax
 
 
 
-	push ebx
-	xor eax, eax
-	xor ebx, ebx
-
-	mov eax, real_part
-	mov ebx, imag_part
-
-	cmp ebx, 0
-	jle octant_2
-	cmp ebx,eax
-	jg octant_2
-	mov octant, 1
-	jmp _end
-
-	; IF it doesnt work, try clearing flags
-
-	octant_2:
-
-	cmp eax, 0
-	jle octant_3
-	cmp eax, ebx
-	jge octant_3
-	mov octant, 2
-	jmp _end
-
-	octant_3:
-	push eax
-	cmp eax, 0
-	jns octant_4
-	neg eax
-	cmp ebx, eax
-	jle octant_4
-	mov octant, 3
-	jmp _end
-
-	octant_4:
-							;eax ya viene negado
-	cmp ebx, 0
-	jle octant_5
-	cmp ebx, eax
-	jg octant_5
-	mov octant, 4
-	jmp _end
-
-	octant_5:
-
-	pop eax
-	cmp ebx, 0
-	jns octant_6
-	cmp ebx, eax
-	jl octant_6			;en este momento los dos estan negados
-	mov octant, 5
-	jmp _end
-
-	octant_6:
-	cmp eax, 0
-	jns octant_7
-	push eax
-	neg eax
-	cmp eax, ebx
-	pop eax
-	jle octant_7
-	mov octant, 6
-	
-	jmp _end
-	
-	
-	octant_7:
-	cmp eax, 0
-	jle octant_8
-	push ebx
-	neg ebx
-	cmp eax, ebx
-	pop ebx
-	jge octant_8
-	mov octant, 7
-	jmp _end
-
-
-	octant_8:
-	cmp ebx, 0
-	jns _end
-	neg ebx
-	cmp eax, ebx
-	jle _end
-	mov octant, 8
-	neg ebx
-
-	_end:
-	; Place code here for clearing all flags
-
-	pop eax
-	pop ebx
+					
 
 
 
@@ -170,11 +88,6 @@ xor ebx, ebx
 mov eax, real_part
 mov ebx, imag_part
 
-push eax
-movzx eax, octant
-call WriteInt
-call Crlf
-pop eax
 
 push eax
 
@@ -243,6 +156,66 @@ sar eax, 15
 mov alternate_denominator, eax
 
 
+
+xor eax, eax				;Both registers eax and ebx are cleaned 
+xor ebx, ebx
+mov eax, real_part			;The real part of the number is moved to eax
+mov ebx, imag_part			;The imaginary part is moved to ebx
+
+INVOKE octant				;Octant procedure is called with eax = real_part and ebx = imag_part
+
+
+cmp eax, 2
+je second_third
+cmp eax, 3
+je second_third
+jmp next
+
+second_third:
+
+xor eax, eax
+xor ebx, ebx
+mov eax, numerator
+cdq
+mov ebx, alternate_denominator
+idiv ebx
+mov theta, eax
+xor eax, eax
+mov eax, half_pi
+sub eax, theta
+mov theta, eax
+
+jmp adjustment
+
+next:
+
+cmp eax, 6
+je six_seven
+cmp eax, 7
+je six_seven
+
+jmp other_octants
+
+six_seven:
+
+xor eax, eax
+xor ebx, ebx
+mov eax, numerator
+cdq
+mov ebx, alternate_denominator
+idiv ebx
+mov theta, eax
+xor eax, eax
+mov eax, half_pi
+neg eax
+sub eax, theta
+mov theta, eax
+
+jmp end_if
+
+; OCTANTS 1 AND 8
+other_octants:
+
 xor eax, eax
 xor ebx, ebx
 
@@ -253,8 +226,62 @@ idiv ebx
 mov theta, eax
 
 
+adjustment:
+
+xor eax, eax
+xor ebx, ebx
+mov eax, real_part
+mov ebx, imag_part
+
+cmp ebx, 0
+jl second_condition
+cmp eax, 0
+jge second_condition
+mov eax, theta
+add eax, pi
+mov theta, eax
+jmp end_if
+
+second_condition:
+
+cmp ebx, 0
+jge third_condition
+cmp eax, 0
+jge third_condition
+mov eax, theta
+sub eax, pi
+mov theta, eax
+jmp end_if
+
+third_condition:
+
+cmp ebx, 0
+jle fourth_condition
+cmp eax,0
+jne fourth_condition
+xor eax, eax
+mov eax, half_pi
+mov theta, eax
+jmp end_if
+
+fourth_condition:
+
+cmp ebx, 0
+jge end_if
+cmp eax,0
+jne end_if
+xor eax, eax
+mov eax, half_pi
+neg eax
+mov theta, eax
+
+end_if:
+
 mov edx, OFFSET prompt_3
 call WriteString
+
+xor eax, eax
+mov eax, theta
 CALL WriteInt
 
 
