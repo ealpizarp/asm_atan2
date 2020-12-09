@@ -1,0 +1,3 @@
+﻿  Assembling main.asm...
+main.asm(11): warning A4011: multiple .MODEL directives found : .MODEL ignored
+  atan2.vcxproj -> C:\Users\arikt\Desktop\Arquitectura de computadores\Proyectos\Proyecto 2\grupo_08_proyecto2\asm\atan2\Debug\atan2.exe
