@@ -23,7 +23,19 @@ octant_var DWORD ?
 
 .code
 
+
+
 octant PROC
+
+	mov octant_var, 0
+	cmp eax, 0
+	je _end
+	cmp ebx, 0
+	je _end
+
+	jmp octant_1
+
+octant_1:
 
 	cmp ebx, 0
 	jle octant_2
@@ -112,7 +124,6 @@ octant_8:
 	neg ebx
 
 _end:
-
 
 mov eax, octant_var
 
