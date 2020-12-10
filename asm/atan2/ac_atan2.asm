@@ -41,7 +41,7 @@ alternate_denominator DWORD ?			; this one contains a variation of the denominat
 
 .code
 
-atan2 PROC
+atan2 PROC angle:PTR DWORD
 
 mov real_part, eax						;The real part of the number is moved to eax
 mov imag_part, ebx						;The imaginary part is moved to ebx
@@ -244,6 +244,8 @@ end_if:
 
 xor eax, eax							; eax register is cleaned
 mov eax, theta							; theta is moved to eax 
+mov esi, angle
+mov DWORD PTR [esi], eax
 
 RET
 

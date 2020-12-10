@@ -11,6 +11,6 @@
 .stack 4096
 .386
 
-atan2 PROTO 
+atan2 PROTO:PTR DWORD
 
 .LIST

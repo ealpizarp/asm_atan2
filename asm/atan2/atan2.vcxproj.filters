@@ -3,10 +3,10 @@
   <ItemGroup>
     <MASM Include="main.asm" />
     <MASM Include="octant.asm" />
-    <MASM Include="atan2.asm" />
+    <MASM Include="ac_atan2.asm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="octant.inc" />
-    <None Include="atan2.inc" />
+    <None Include="ac_atan2.inc" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,3 @@
-  
 ; ==========Costa Rica Institute of Technology===========
 ; Authors: Eric Alpizar
 ;		   Rodrigo Espinach

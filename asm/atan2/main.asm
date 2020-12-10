@@ -11,7 +11,7 @@ include C:\Irvine\Irvine32.inc
 includelib C:\Irvine\Irvine32.lib
 includelib C:\Irvine\Kernel32.lib
 includelib C:\Irvine\user32.lib
-include atan2.inc
+include ac_atan2.inc
 include octant.inc
 
 ; Descripcion del Programa:
@@ -59,7 +59,7 @@ xor ebx, ebx
 mov eax, Q
 mov ebx, I
 
-INVOKE atan2
+INVOKE atan2, ADDR angle
 
 mov angle, eax
 

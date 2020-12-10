@@ -19,12 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="atan2.asm" />
+    <MASM Include="ac_atan2.asm" />
     <MASM Include="main.asm" />
     <MASM Include="octant.asm" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="atan2.inc" />
+    <None Include="ac_atan2.inc" />
     <None Include="octant.inc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
