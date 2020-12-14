@@ -36,6 +36,8 @@ ExitProcess PROTO, dwExitCode:DWORD
 prompt_1 BYTE "Please enter the real part: ", 0												; Prompts are saved
 prompt_2 BYTE "Please enter the imaginary part: ", 0
 prompt_3 BYTE "The result is: ", 0
+prompt_4 BYTE "Cannot create file",0dh, 0ah,0
+
 
 Q DWORD ?
 I DWORD ?
@@ -44,10 +46,14 @@ angle DWORD ?
 
 buffer BYTE BUFFER_SIZE DUP (?)
 buffer_data DWORD 848 DUP (0)
+angle_data DWORD 848 DUP (0)
 inFilename BYTE 80 DUP(0)
+outFilename BYTE "output.txt",0
 fileHandle HANDLE ?
 file_size DWORD ?
 num_dwords DWORD ?
+alternate_state DWORD ?
+sec_counter_val DWORD ?
 
 .code
 
@@ -192,6 +198,63 @@ jmp _repeat										; unconditional jump to repeat
 
 
 quit:
+
+
+xor ecx, ecx
+mov alternate_state, ecx
+mov sec_counter_val, ecx
+CALL Crlf
+CALL Crlf
+CALL Crlf
+
+
+_iterate:
+
+cmp ecx, 585
+jge _start
+
+mov edi, OFFSET buffer_data
+mov eax, [edi + ecx]
+
+add ecx, 4
+
+mov ebx, alternate_state
+cmp ebx, 0
+je assign_real
+cmp ebx, 1
+je assign_imag
+
+jmp _iterate
+
+
+assign_real:
+
+mov Q, eax
+mov alternate_state, 1
+jmp _iterate
+
+assign_imag:
+
+mov I, eax
+mov eax, Q
+mov ebx, I
+
+INVOKE atan2, ADDR angle
+mov eax, angle
+
+CALL WriteInt
+CALl Crlf
+
+mov alternate_state, 0
+
+jmp _iterate
+
+
+
+
+
+
+_start:
 
 mov edx, OFFSET prompt_1
 
