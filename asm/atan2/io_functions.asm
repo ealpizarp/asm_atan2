@@ -1,3 +1,9 @@
+; ==========Costa Rica Institute of Technology===========
+; Authors: Eric Alpizar
+;		   Rodrigo Espinach
+;		   Jimmy Salas
+; Last date modified: 12/15/2020
+
 include C:\Irvine\Irvine32.inc
 include C:\Irvine\macros.inc
 includelib C:\Irvine\Irvine32.lib
@@ -5,11 +11,15 @@ includelib C:\Irvine\Kernel32.lib
 includelib C:\Irvine\user32.lib
 BUFFER_SIZE = 5000
 
+
 .data
 
 buffer BYTE BUFFER_SIZE DUP (?)
-outFilename BYTE "output.txt",0
-error_msg BYTE "Cannot create file",0dh, 0ah,0
+outFilename BYTE "output.txt", 0
+error_msg BYTE "Cannot create file",0dh, 0ah, 0
+read_file BYTE "File succesfuly read on buffer!", 0
+created_file BYTE "Output.txt file containig the angles created succesfully!", 0
+num_coordinates DWORD 0
 outFileHandle HANDLE ?
 buffer_data DWORD 848 DUP (0)
 infilename BYTE 80 DUP(0)
@@ -18,6 +28,18 @@ file_size DWORD ?
 num_dwords DWORD ?
 
 .code
+
+;-----------------------------------------------------------------------------
+; READ_VALUES PROC
+; Opens a text file indicated by the user, analyses byte per byte according to
+; the format that follows the coordinates in the input_file, parses the ascii codes
+; byte per byte in order to create the right integer and then copies the repective
+; x and y coordinates to an array of DWORDS.
+; Recieves: coodinates_array:PTR BYTE = the pointer of an array of DWORDS
+; Returns:	An array of DWORDS containing the x and y coordinates
+;			ecx = number of coordinates in the array
+;-----------------------------------------------------------------------------
+
 
 read_values PROC coordinates_array:PTR DWORD
 xor eax, eax									; eax register is cleaned
@@ -61,8 +83,12 @@ CALL Crlf
 
 mWrite<"Buffer:", 0dh, 0ah, 0dh, 0ah>
 mov edx, OFFSET buffer							; the offset of the buffer is moved to edx
-CALL WriteString						
+CALL WriteString		
 CALl Crlf
+mov edx, OFFSET read_file						; the offset of the buffer is moved to edx
+CALL WriteString				
+CALl Crlf
+
 
 close_file:
 mov eax, fileHandle								; the file handler is moved to eax
@@ -75,8 +101,8 @@ quit:
 mov edx, OFFSET buffer							; the offset of the buffer is moved to edx
 
 CALL ParseInteger32								; the first intager in the file is parsed
-CALL WriteInt									; first integer is written on screen
-CALl Crlf										; endline made on screen
+;CALL WriteInt									; first integer is written on screen --DEBUG
+;CALl Crlf										; endline made on screen --DEBUG
 
 push ecx
 mov esi, OFFSET buffer							; the offset of the buffer is moved to esi ass well
@@ -121,15 +147,17 @@ xor edi, edi									; the extended destination register is cleaned as well
 mov ecx, num_dwords								; num_dwords wich holds the value of the number of dwords analyzed is moved to ecx
 mov edi, coordinates_array						; the offset of the buffer_data array is moved to the edi register
 mov [edi + ecx], eax							; the value of eax is assinged  to the offset loication of buffer_data plus the value of the counter register
-CALL WriteInt									; a write on screen is made for debug purposes
-CALl Crlf										; new_line printed on screen
+;CALL WriteInt									; a write on screen is made for debug purposes --DEBUG
+;CALl Crlf										; new_line printed on screen --DEBUG
 add ecx, 4										; an addition to ecx is made in order to move to the next element
 mov num_dwords, ecx								; the value of the counter register is stored in num_dwords
 pop ecx											; the value of ecx is restored
+add num_coordinates, 1
 jmp _repeat										; unconditional jump to repeat
 
 _end:
 
+mov ecx, num_coordinates						; the number of coordinates is moved to eax
 
 RET
 
@@ -137,31 +165,42 @@ read_values ENDP
 
 
 
+;-----------------------------------------------------------------------------
+; WRITE_VALUES PROC
+; Creates an output.txt file and writes the content of the buffer passed by parameter
+; Recieves: out_buffer:PTR BYTE = the pointer of an array of bytes
+; Returns: Nothing
+;-----------------------------------------------------------------------------
+
 write_values PROC out_buffer:PTR BYTE
-; Enviar por ecx el buffer_counter del main
 
-mov edx, OFFSET outFilename
-CALL CreateOutputFile
-mov outFileHandle, eax
+push ecx										; the value of ecx is pushed to the stack
+
+mov edx, OFFSET outFilename						; the offset of the output file name (output.txt) is moved to edx 
+CALL CreateOutputFile							; Irvine´s procedure for creating an output file is called here
+mov outFileHandle, eax							; the handle returned by the create output procedure is moved to outFileHandle
 
 
-cmp eax, INVALID_HANDLE_VALUE
-jne succesful_creation
-mov edx, OFFSET error_msg
-CALL WriteString
-jmp program_end
+cmp eax, INVALID_HANDLE_VALUE					; checks if the handle in eax returned by the create ouput file procedure is valid
+jne succesful_creation							; if the handle is not equal to INVALID HANDLE then jump to the succesful creation label 
+mov edx, OFFSET error_msg						; the offset of the error message is moved to edx
+CALL WriteString								; The error message is printed to console
+jmp program_end									; unconditional jump to the program_end label
 
-succesful_creation:
+succesful_creation:		
 
-mov eax, outFileHandle
-mov edx, out_buffer
-mov ecx, 463
-CALL WriteToFile
+mov eax, outFileHandle							; moves the out handler to eax
+mov edx, out_buffer								; moved to edx the buffer that´s going to be written on the file
+pop ecx											; pops the value of ecx from the stack
+CALL WriteToFile								; The WriteToFile procedure is called from Irvine´s library
+mov edx, OFFSET created_file					; the offset of the message for indicating a succesful file creation is moved to edx
+CALL WriteString								; The WriteString procedure is called in order to display the message
+CALl Crlf										; An endline is printed on screen
 
 program_end:
 
-mov eax, outFileHandle
-CALL CloseFile
+mov eax, outFileHandle							; the out file handle is moved to eax once again
+CALL CloseFile									; the file is closed using the CloseFile procedure
 
 RET
 
