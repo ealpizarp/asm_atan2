@@ -20,11 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <MASM Include="ac_atan2.asm" />
+    <MASM Include="ascii_parsing.asm" />
+    <MASM Include="io_functions.asm" />
     <MASM Include="main.asm" />
     <MASM Include="octant.asm" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ac_atan2.inc" />
+    <None Include="ascii_parsing.inc" />
+    <None Include="io_functions.inc" />
     <None Include="octant.inc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

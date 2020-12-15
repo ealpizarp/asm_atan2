@@ -1,4 +1,4 @@
-; ==========Costa Rica Institute of Technology===========
+ ; ==========Costa Rica Institute of Technology===========
 ; Authors: Eric Alpizar
 ;		   Rodrigo Espinach
 ;		   Jimmy Salas
@@ -10,8 +10,6 @@
 .stack 4096
 .386
 
-read_values PROTO:PTR DWORD
-
-write_values PROTO:PTR BYTE
+to_ascii PROTO:PTR BYTE
 
 .LIST
